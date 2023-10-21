@@ -10,3 +10,35 @@ body {
     max-width: 100%;
     height: auto;
 }
+#startGame {
+    padding: 10px 20px;
+    font-size: 20px;
+    background-color: #f0c040;
+    border: none;
+    cursor: pointer;
+    margin: 20px;
+    position: absolute;
+    
+}
+
+#startGame:hover {
+    background-color: #e0b030;
+}
+#restartGame {
+    display: none; /* Initially hidden */
+    /* The rest of your button styles... */
+}
+#restartGame {
+    padding: 10px 20px;
+    font-size: 20px;
+    background-color: #40aef0;
+    border: none;
+    cursor: pointer;
+    margin: 20px;
+}
+
+
+
+#restartGame:hover {
+    background-color: #309de0;
+}
