@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desi Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+    /* Optional: To prevent user zooming on mobile */
+    body {
+      touch-action: manipulation;
+    }
+  </style>
+<body>
+    <canvas id="gameCanvas" width="1000" height="800"></canvas>
+    <audio id="bulletSound" src="bullet-sound.mp4" preload="auto"></audio>
+    <audio id="mandyScreamSound" src="mandy-scream.mp3" preload="auto"></audio>
+    <audio id="rizScreamSound" src="riz-scream.mp4" preload="auto"></audio>
+    <audio id="punnuScreamSound" src="punnu-scream.mp4" preload="auto"></audio>
+    <audio id="seanScreamSound" src="sean-scream.mp4" preload="auto"></audio>
+    <audio id="chellyScreamSound" src="chelly-scream.mp4" preload="auto"></audio>
+    <audio id="ishaScreamSound" src="isha-scream.mp4" preload="auto"></audio>
+    <audio id="sahilScreamSound" src="sahil-scream.mp4" preload="auto"></audio>
+    <audio id="reetuScreamSound" src="reetu-scream.mp4" preload="auto"></audio>
+    <audio id="neetuScreamSound" src="neetu-scream.mp4" preload="auto"></audio>
+    
+
+    <script>
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Responsive code for mobile gaming
+let startX; // This variable will store the starting x position of a touch event
+
+canvas.addEventListener("touchstart", function(e) {
+    // Store the starting x position when touch starts
+    startX = e.touches[0].clientX;
+}, false);
+
+canvas.addEventListener("touchmove", function(e) {
+    // Calculate the distance swiped
+    let deltaX = e.touches[0].clientX - startX;
+
+    // Determine if swipe was to the left or right
+    if (deltaX > 30) { // Right swipe
+        player.x += player.speed;
+        startX = e.touches[0].clientX; // Reset startX to current position
+    } else if (deltaX < -30) { // Left swipe
+        player.x -= player.speed;
+        startX = e.touches[0].clientX; // Reset startX to current position
+    }
+
+    // Prevent default behavior to avoid scrolling while swiping on canvas
+    e.preventDefault();
+}, false);
+
+canvas.addEventListener("touchend", function(e) {
+    // Shoot bullet on tap
+    if (canShoot) {
+        bullets.push({
+            x: player.x + player.width / 2,
+            y: player.y,
+            width: 3,
+            height: 5,
+            speed: 8
+        });
+        setTimeout(() => { canShoot = true; }, 500);
+        canShoot = false;
+
+        // Play bullet sound, if available
+        if (document.getElementById("bulletSound")) {
+            document.getElementById("bulletSound").play();
+        }
+    }
+}, false);
+let player = {
+  x: 400,
+  y: 550,
+  width: 50,
+  height: 50,
+  speed: 8,
+  lives: 3,
+  score: 0,
+  image: new Image()
+};
+
+const playerImage = new Image();
+playerImage.src = 'player.png'; // upload this asset
+player.image = playerImage;
+ 
+let aliens = [
+  { x: 100, y: 50, width: 50, height: 50, speed: 1, image: new Image() },
+  { x: 200, y: 50, width: 50, height: 50, speed: 1, image: new Image() },
+  { x: 300, y: 50, width: 50, height: 50, speed: 1, image: new Image() },
+  { x: 400, y: 50, width: 50, height: 50, speed: 1, image: new Image() },
+  { x: 500, y: 50, width: 50, height: 50, speed: 1, image: new Image() },
+  { x: 600, y: 50, width: 50, height: 50, speed: 1, image: new Image() },
+  { x: 700, y: 50, width: 50, height: 50, speed: 1, image: new Image() },
+  { x: 800, y: 50, width: 50, height: 50, speed: 1, image: new Image() },
+  { x: 900, y: 50, width: 50, height: 50, speed: 1, image: new Image() }
+  // Add as many as you need
+];
+
+aliens[0].image.src = "alien-chelly.png"; // replace with your image path
+aliens[1].image.src = "alien-isha.png"; // replace with your image path
+aliens[2].image.src = "alien-mandy.png"; // replace with your image path
+aliens[3].image.src = "alien-neetu.png"; // replace with your image path
+aliens[4].image.src = "alien-punnu.png"; // replace with your image path
+aliens[5].image.src = "alien-reetu.png"; // replace with your image path
+aliens[6].image.src = "alien-riz.png"; // replace with your image path
+aliens[7].image.src = "alien-sahil.png"; // replace with your image path
+aliens[8].image.src = "alien-sean.png"; // replace with your image path
+// aliens[9].image.src = "alien-shilpi.png"; // replace with your image path
+
+let bullets = [];
+let canShoot = true;
+let keys = {};
+
+window.addEventListener("keydown", function (e) {
+  keys[e.code] = true;
+});
+
+window.addEventListener("keyup", function (e) {
+  keys[e.code] = false;
+});
+
+//function to load images before the gameloop function runs
+let imagesToLoad = aliens.length + 1; // +1 for the player image
+
+player.image.onload = imageLoaded;
+aliens.forEach(alien => alien.image.onload = imageLoaded);
+
+function imageLoaded() {
+  imagesToLoad--;
+  if (imagesToLoad == 0) {
+    gameInterval = setInterval(gameLoop, 1000 / 60);
+    console.log("Image loaded");
+    
+  }
+}
+
+
+function gameLoop() {
+  console.log("Start of gameLoop");
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (keys["ArrowLeft"] && player.x > 0) {
+    player.x -= player.speed;
+  } else if (keys["ArrowRight"] && player.x + player.width < canvas.width) {
+    player.x += player.speed;
+  }
+  
+  if (keys["Space"] && canShoot) {
+///
+//     {
+//   ...
+//   setTimeout(() => { canShoot = true; }, 500);  // 0.5 second delay between bullets
+//   canShoot = false;
+// }
+///
+      bullets.push({
+      x: player.x + player.width / 2,
+      y: player.y,
+      width: 3,
+      height: 5,
+      speed: 8
+    });
+    setTimeout(() => { canShoot = true; }, 500);  // 0.5 second delay between bullets
+  canShoot = false;
+  document.getElementById("bulletSound").play();
+  }
+
+  bullets.forEach((bullet, i) => {
+    bullet.y -= bullet.speed;
+
+    ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+    console.log("After clearRect");
+
+    aliens.forEach((alien, j) => {
+      if (
+        bullet.x < alien.x + alien.width &&
+        bullet.x + bullet.width > alien.x &&
+        bullet.y < alien.y + alien.height &&
+        bullet.y + bullet.height > alien.y
+      ) {
+        if (alien.image.src.endsWith("alien-mandy.png")) {
+        // Check if the hit alien is 'alien-mandy.png' and play the corresponding sound
+                document.getElementById("mandyScreamSound").play();
+            }
+
+        // Check if the hit alien is 'alien-riz.png' and play the corresponding sound
+        if (alien.image.src.endsWith("alien-riz.png")) {
+                document.getElementById("rizScreamSound").play();
+            }  
+
+        // Check if the hit alien is 'alien-punnu.png' and play the corresponding sound
+        if (alien.image.src.endsWith("alien-punnu.png")) {
+                document.getElementById("punnuScreamSound").play();
+            }
+        // Check if the hit alien is 'alien-sean.png' and play the corresponding sound
+        if (alien.image.src.endsWith("alien-sean.png")) {
+                document.getElementById("seanScreamSound").play();
+            }
+        // Check if the hit alien is 'alien-chelly.png' and play the corresponding sound
+        if (alien.image.src.endsWith("alien-chelly.png")) {
+                document.getElementById("chellyScreamSound").play();
+            }
+        // Check if the hit alien is 'alien-isha.png' and play the corresponding sound
+        if (alien.image.src.endsWith("alien-isha.png")) {
+                document.getElementById("ishaScreamSound").play();
+            }
+        // Check if the hit alien is 'alien-sahil.png' and play the corresponding sound
+        if (alien.image.src.endsWith("alien-sahil.png")) {
+                document.getElementById("sahilScreamSound").play();
+            }
+        // Check if the hit alien is 'alien-reetu.png' and play the corresponding sound
+        if (alien.image.src.endsWith("alien-reetu.png")) {
+                document.getElementById("reetuScreamSound").play();
+            }
+        // Check if the hit alien is 'alien-neetu.png' and play the corresponding sound
+        if (alien.image.src.endsWith("alien-neetu.png")) {
+                document.getElementById("neetuScreamSound").play();
+            }
+
+        aliens.splice(j, 1);
+        bullets.splice(i, 1);
+        player.score++;
+      }
+    });
+
+    // Remove bullets that go off screen
+    if (bullet.y < 0) {
+      bullets.splice(i, 1);
+    }
+  });
+
+  aliens.forEach((alien, i) => {
+    alien.y += alien.speed;
+
+    // Check for collision with player
+    if (
+      alien.x < player.x + player.width &&
+      alien.x + alien.width > player.x &&
+      alien.y < player.y + player.height &&
+      alien.y + alien.height > player.y
+    ) {
+      aliens.splice(i, 1);
+      player.lives--;
+    }
+
+    // Check for alien reaching bottom
+    if (alien.y + alien.height > canvas.height) {
+      // Game over
+      clearInterval(gameInterval);
+      ctx.fillText("Game Over", 10, 90);
+    }
+
+    ctx.drawImage(alien.image, alien.x, alien.y, alien.width, alien.height);
+  });
+
+  ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
+
+  ctx.fillText("Lives: " + player.lives, 10, 50);
+  ctx.fillText("Score: " + player.score, 10, 70);
+
+  if (player.lives <= 0) {
+    // Game over
+    clearInterval(gameInterval);
+    ctx.fillText("Game Over", (canvas.width - ctx.measureText("Game Over").width) / 2, canvas.height / 2);
+
+  }
+
+  if (aliens.length == 0) {
+    // Player wins
+    clearInterval(gameInterval);
+    ctx.fillText("You Win", (canvas.width - ctx.measureText("Game Over").width) / 2, canvas.height / 2);
+
+  }
+}
+
+// let gameInterval = setInterval(gameLoop, 1000 / 60);
+console.log("game end");
+
+    </script>
+</body>
+</html>
