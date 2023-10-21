@@ -43,13 +43,14 @@ canvas.addEventListener("touchstart", function(e) {
 canvas.addEventListener("touchmove", function(e) {
     // Calculate the distance swiped
     let deltaX = e.touches[0].clientX - startX;
+    let movementMultiplier = 2; // Adjust this value based on desired responsiveness
 
     // Determine if swipe was to the left or right
     if (deltaX > 30) { // Right swipe
-        player.x += player.speed;
+        player.x += deltaX * movementMultiplier;
         startX = e.touches[0].clientX; // Reset startX to current position
     } else if (deltaX < -30) { // Left swipe
-        player.x -= player.speed;
+        player.x += deltaX * movementMultiplier;
         startX = e.touches[0].clientX; // Reset startX to current position
     }
 
